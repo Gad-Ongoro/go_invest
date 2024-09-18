@@ -22,9 +22,9 @@ class UserSerializer(serializers.ModelSerializer):
     accounts = UserInvestmentAccountSerializer(source='userinvestmentaccount_set', many=True, read_only=True)
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'password', 'accounts', 'date_joined', 'updated_at']
+        fields = ['id', 'first_name', 'last_name', 'email', 'password', 'accounts', 'date_joined', 'updated_at']
         extra_kwargs = {'password': {'write_only': True}, 'date_joined': {'read_only': True}}
-        
+
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
 
@@ -41,3 +41,12 @@ class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         fields = '__all__'
+
+    def validate_amount(self, value):
+        if value < 1:
+            raise serializers.ValidationError("The amount must be greater than 1.")
+        return value
+
+    def create(self, validated_data):
+        transaction = Transaction.objects.create(**validated_data)
+        return transaction
