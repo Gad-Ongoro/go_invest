@@ -10,6 +10,12 @@ markdown = "*"
 django-filter = "*"
 uuid = "*"
 dj-database-url = "*"
+python-dotenv = "*"
+django-guardian = "*"
+djangorestframework-simplejwt = "*"
+whitenoise = "*"
+psycopg2 = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 
