@@ -1,6 +1,8 @@
 from rest_framework import permissions
 from rest_framework.exceptions import PermissionDenied
 from .models import InvestmentAccount, UserInvestmentAccount, User
+from django.core.exceptions import ValidationError
+import uuid
 
 class TransactionPermission(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -14,9 +16,19 @@ class TransactionPermission(permissions.BasePermission):
 
         # Membership restriction
         try:
+            def get_user_by_email_or_id(user_identifier):
+                if isinstance(user_identifier, User):
+                    return user_identifier
+                try:
+                    uuid_obj = uuid.UUID(str(user_identifier), version=4)
+                    user = User.objects.get(id=uuid_obj)
+                except (ValueError, TypeError, ValidationError):
+                    user = User.objects.get(email=user_identifier)
+                return user
+
             user_investment = UserInvestmentAccount.objects.get(user=user, investment_account=account_id)
             account = user_investment.investment_account
-            user = User.objects.get(id=user)
+            user = get_user_by_email_or_id(user)
             user_groups = user.groups.all()
             user_access_rights = [group.permissions.all()[0].codename for group in user.groups.all()]
 
