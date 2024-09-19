@@ -26,7 +26,7 @@ class TransactionPermission(permissions.BasePermission):
                     user = User.objects.get(email=user_identifier)
                 return user
 
-            user_investment = UserInvestmentAccount.objects.get(user=user, investment_account=account_id)
+            user_investment = UserInvestmentAccount.objects.get(user=get_user_by_email_or_id(user), investment_account=account_id)
             account = user_investment.investment_account
             user = get_user_by_email_or_id(user)
             user_groups = user.groups.all()
